@@ -1,0 +1,5 @@
+# Ignore IDEA files
+.idea
+
+# Ignore temporary files
+*~

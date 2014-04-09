@@ -13,6 +13,7 @@ smtp_config = {
 monitor_config = {
     site_url: "http://www.timeout.com/london",
     email: "freeman.zhenia@gmail.com",
+    sender: "no-reply_site_watchdog@gmail.com",
     appropriate_response_codes: [200, 201, 301],
     number_of_tries: 3,
     max_response_time: 6

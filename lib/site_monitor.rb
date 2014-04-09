@@ -3,7 +3,7 @@ class SiteMonitor
   attr_accessor :site_url, :email, :appropriate_response_codes,
                 :number_of_tries, :max_response_time, :timeout_down_error, :response_code_down_error
 
-  attr_reader :smtp_config_array, :valid_attributes
+  attr_reader :smtp_config, :valid_attributes
 
   def initialize(options={}, mail_config)
     @site_url = options[:site_url]
@@ -11,7 +11,7 @@ class SiteMonitor
     @appropriate_response_codes = options[:appropriate_response_codes]
     @number_of_tries = options[:number_of_tries]
     @max_response_time = options[:max_response_time]
-    @smtp_config_array = mail_config.values
+    @smtp_config = mail_config
     @valid_attributes = false
     @timeout_down_error, @response_code_down_error = nil, nil
   end

@@ -75,16 +75,21 @@ class SiteMonitor
           @response_code_down_error = nil
         end
       else
-        @response_code_down_error = "Incorrect HTTP response code - #{response.code}"
-        @number_of_tries.times do
-          response = http.start() {|request| request.get(url) }
-          if @appropriate_response_codes.include?(response.code.to_i)
-            @response_code_down_error = nil
-            break
+        if @response_code_down_error
+          next
+        else
+          @response_code_down_error = "Incorrect HTTP response code - #{response.code}"
+          @number_of_tries.times do
+            response = http.start() {|request| request.get(url) }
+            if @appropriate_response_codes.include?(response.code.to_i)
+              @response_code_down_error = nil
+              break
+            end
+            sleep 0.5
           end
-          sleep 0.5
+          send_message(:error, :response_code) if @response_code_down_error
         end
-        send_message(:error, :response_code) if @response_code_down_error
+
       end
     end
   end

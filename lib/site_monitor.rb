@@ -81,7 +81,7 @@ END_OF_MESSAGE
           else
             # After attempts ended - send email
             @timeout_down_error = "No response during #{@max_response_time} seconds"
-            send_message(:error, :timeout)
+            send_message(:error)
             next
           end
         end
@@ -89,7 +89,7 @@ END_OF_MESSAGE
 
       # You may enter this block only after you fix timeout down error
       if @timeout_down_error
-        send_message(:fixed, :timeout)
+        send_message(:fixed)
         @timeout_down_error = nil
       end
 
@@ -97,7 +97,7 @@ END_OF_MESSAGE
       if @appropriate_response_codes.include?(response.code.to_i)
         # If you pass previous condition and have errors - it means this error was fixed
         if @response_code_down_error
-          send_message(:fixed, :response_code)
+          send_message(:fixed)
           @response_code_down_error = nil
         end
       else
@@ -113,7 +113,7 @@ END_OF_MESSAGE
             end
             sleep 0.5
           end
-          send_message(:error, :response_code) if @response_code_down_error
+          send_message(:error) if @response_code_down_error
         end
 
       end
@@ -122,7 +122,7 @@ END_OF_MESSAGE
 
   private
 
-  def send_message(reason, type)
+  def send_message(reason)
     if reason == :error
       @error_message += "#{@response_code_down_error or @timeout_down_error}"
       Net::SMTP.start(@smtp_config[:host], @smtp_config[:port], @smtp_config[:address], @smtp_config[:user_name], @smtp_config[:password], @smtp_config[:authentication]) do |smtp|

@@ -59,9 +59,17 @@ class SiteMonitor
         end
       end
 
+      if @timeout_down_error
+        send_message(:fixed)
+        @timeout_down_error = nil
+      end
+
       # Check response code
       if @appropriate_response_codes.include?(response.code.to_i)
-        next
+        if @response_code_down_error
+          send_message(:fixed)
+          @response_code_down_error = nil
+        end
       else
         @number_of_tries.times do
           response = http.start() {|request| request.get(url) }

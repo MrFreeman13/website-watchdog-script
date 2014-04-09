@@ -11,11 +11,11 @@ smtp_config = {
 }
 
 monitor_config = {
-    site_url: "http://ya.ru",
+    site_url: "http://www.timeout.com/london",
     email: "freeman.zhenia@gmail.com",
     appropriate_response_codes: [200, 201, 301],
     number_of_tries: 3,
-    max_response_time: 30
+    max_response_time: 6
 }
 
 yandex_monitor = SiteMonitor.new(monitor_config, smtp_config)
@@ -24,3 +24,4 @@ if validate_errors.size > 0
   puts validate_errors
   exit
 end
+yandex_monitor.start_monitoring

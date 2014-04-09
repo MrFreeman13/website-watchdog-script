@@ -1,12 +1,13 @@
 Dir.glob("#{File.dirname(__FILE__)}/config/*").each { |file| require_relative file }
 Dir.glob("#{File.dirname(__FILE__)}/lib/*").each { |file| require_relative file }
 
+# mailtrap.io inbox configuration. Just for testing
 smtp_config = {
     host: 'mailtrap.io',
     port: 2525,
     address: 'mailtrap.io',
-    user_name: '250929978b732beb',
-    password: '63d5ecc2b2b98e',
+    user_name: '2509fe1ed9cbfe78',
+    password: '7f0f9c07116d1b',
     authentication: :cram_md5
 }
 

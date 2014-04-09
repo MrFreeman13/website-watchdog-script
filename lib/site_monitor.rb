@@ -47,27 +47,31 @@ class SiteMonitor
         if @timeout_down_error
           next
         else
+          # Try to retry open a site @number_of_tries times
           if tries_counter < @number_of_tries
             tries_counter += 1
             sleep 0.5
             retry
           else
+            # After attempts ended - send email
             @timeout_down_error = "No response during #{@max_response_time} seconds"
-            send_message(:error)
+            send_message(:error, :timeout)
             next
           end
         end
       end
 
+      # You may enter this block only after you fix timeout down error
       if @timeout_down_error
-        send_message(:fixed)
+        send_message(:fixed, :timeout)
         @timeout_down_error = nil
       end
 
       # Check response code
       if @appropriate_response_codes.include?(response.code.to_i)
+        # If you pass previous condition and have errors - it means this error was fixed
         if @response_code_down_error
-          send_message(:fixed)
+          send_message(:fixed, :response_code)
           @response_code_down_error = nil
         end
       else
@@ -79,14 +83,14 @@ class SiteMonitor
             break
           end
         end
-        send_message(:error) if @response_code_down_error
+        send_message(:error, :response_code) if @response_code_down_error
       end
     end
   end
 
   private
 
-  def send_message(reason)
+  def send_message(reason, type)
 
   end
 end

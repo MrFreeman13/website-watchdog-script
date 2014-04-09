@@ -3,7 +3,7 @@ class SiteMonitor
   attr_accessor :site_url, :email, :sender, :appropriate_response_codes,
                 :number_of_tries, :max_response_time, :timeout_down_error, :response_code_down_error
 
-  attr_reader :smtp_config, :valid_attributes
+  attr_reader :smtp_config, :valid_attributes, :error_message, :fixed_message
 
   def initialize(options={}, mail_config)
     @site_url = options[:site_url]
@@ -15,6 +15,31 @@ class SiteMonitor
     @smtp_config = mail_config
     @valid_attributes = false
     @timeout_down_error, @response_code_down_error = nil, nil
+
+    @error_message =  <<END_OF_MESSAGE
+    From: Site Watchdog <#{@sender}>
+To: Customer <#{@email}>
+Subject: Site is down
+
+Dear Customer,
+
+Your site #{@site_url} is down now.
+
+
+END_OF_MESSAGE
+
+    @fixed_message =  <<END_OF_MESSAGE
+    From: Site Watchdog <#{@sender}>
+To: Customer <#{@email}>
+Subject: Site is online
+
+Dear Customer,
+
+Your site #{@site_url} is online now.
+
+
+END_OF_MESSAGE
+
   end
 
   def validate_attributes
@@ -98,7 +123,21 @@ class SiteMonitor
   private
 
   def send_message(reason, type)
-
+    if reason == :error
+      @error_message += "#{@response_code_down_error or @timeout_down_error}"
+      Net::SMTP.start(@smtp_config[:host], @smtp_config[:port], @smtp_config[:address], @smtp_config[:user_name], @smtp_config[:password], @smtp_config[:authentication]) do |smtp|
+        smtp.send_message @error_message,
+                          @sender,
+                          @email
+      end
+    else
+      @fixed_message += "The last error is  #{@response_code_down_error or @timeout_down_error}"
+      Net::SMTP.start(@smtp_config[:host], @smtp_config[:port], @smtp_config[:address], @smtp_config[:user_name], @smtp_config[:password], @smtp_config[:authentication]) do |smtp|
+        smtp.send_message @fixed_message,
+                          @sender,
+                          @email
+      end
+    end
   end
 end
 
